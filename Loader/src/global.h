@@ -37,10 +37,7 @@ WindUnloadDriver(
 	_In_ BOOLEAN Hidden
 	);
 
-// sysinfo.cpp
-NTSTATUS
-PrintSystemInformation(
-	);
+// sysinfo.cpp - now in gdrv_loader.h as GdrvQuerySystemInfo
 
 // pe.cpp
 NTSTATUS
@@ -136,7 +133,10 @@ _vsnwprintf(
 }
 #endif
 
-// Debug functions
+// Log callback support
+typedef void (*GDRV_LOG_CALLBACK_INTERNAL)(const wchar_t* Message);
+extern GDRV_LOG_CALLBACK_INTERNAL g_LogCallback;
+
 inline
 VOID
 Printf(
@@ -144,27 +144,14 @@ Printf(
 	...
 	)
 {
+	if (g_LogCallback == nullptr)
+		return;
 	WCHAR Buffer[512];
 	va_list VaList;
 	va_start(VaList, Format);
-	ULONG N = _vsnwprintf(Buffer, 512, Format, VaList);
+	_vsnwprintf(Buffer, 512, Format, VaList);
 	va_end(VaList);
-	WriteConsoleW(NtCurrentPeb()->ProcessParameters->StandardOutput, Buffer, N, &N, nullptr);
-}
-
-inline
-VOID
-WaitForKey(
-	)
-{
-	HANDLE StdIn = NtCurrentPeb()->ProcessParameters->StandardInput;
-	INPUT_RECORD InputRecord = { 0 };
-	ULONG NumRead;
-	while (InputRecord.EventType != KEY_EVENT || !InputRecord.Event.KeyEvent.bKeyDown || InputRecord.Event.KeyEvent.dwControlKeyState !=
-		(InputRecord.Event.KeyEvent.dwControlKeyState & ~(RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)))
-	{
-		ReadConsoleInputW(StdIn, &InputRecord, 1, &NumRead);
-	}
+	g_LogCallback(Buffer);
 }
 
 #ifdef NT_ANALYSIS_ASSUME

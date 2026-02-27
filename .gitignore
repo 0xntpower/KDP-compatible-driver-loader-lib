@@ -1,4 +1,27 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstats
 
-/Loader/.vs
-/Loader/Compiled
-/Loader/src/obj
+# Build output
+Compiled/
+obj/
+*.obj
+*.lib
+*.pdb
+*.iobj
+*.ipdb
+*.exe
+*.res
+*.log
+*.recipe
+*.lastbuildstate
+*.tlog/
+
+# Resource editor
+*.aps
+
+# Manifest (no longer used by static library)
+*.exe.manifest
