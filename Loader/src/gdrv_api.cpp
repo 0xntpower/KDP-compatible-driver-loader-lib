@@ -4,12 +4,13 @@
 // Global log callback instance
 GDRV_LOG_CALLBACK_INTERNAL g_LogCallback = nullptr;
 
-// Internal declarations
+// Internal declarations - WindLoadDriver/WindUnloadDriver have C linkage via global.h
 extern "C" {
 NTSTATUS WindLoadDriver(PWCHAR LoaderName, PWCHAR DriverName, BOOLEAN Hidden);
 NTSTATUS WindUnloadDriver(PWCHAR DriverName, BOOLEAN Hidden);
-NTSTATUS QuerySystemInformation(GDRV_SYSTEM_INFO* Info);
 }
+// QuerySystemInformation has C++ linkage (defined in sys.cpp)
+NTSTATUS QuerySystemInformation(GDRV_SYSTEM_INFO* Info);
 
 void GdrvSetLogCallback(GDRV_LOG_CALLBACK Callback)
 {
